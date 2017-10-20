@@ -3,7 +3,7 @@
 
 import urllib.request as request
 import http.cookiejar as cj
-import time
+import time, re
 
 
 def init_page():
@@ -64,6 +64,27 @@ def get_jscode(opener=None):
         _strArray.append(chr(int(s)))
     _jscode = ''.join(_strArray)
     print('解密后的js代码：\n', _jscode)
+
+    _tokenstr = get_init_token(jscode=_jscode)
+    print('初始token值：', _tokenstr)
+
+
+def get_init_token(jscode=None):
+    '''
+    获取初始token值，用于构建列表页url
+    :param jscode:
+    :return:
+    '''
+    regx = r'location_info = [0-9]+;{1}$'
+    pattern = re.compile(regx)
+
+    match = pattern.search(jscode)
+
+    _tokenstr = ''
+    if match:
+        _tokenstr = match.group()
+        _tokenstr = re.compile(r'\D').sub('', _tokenstr)
+    return _tokenstr
 
 
 if __name__ == '__main__':
