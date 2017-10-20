@@ -35,6 +35,15 @@ def init_page():
 
 
 def get_jscode(opener=None):
+    '''
+    第一段加密的js解密
+    加密方式是把js代码所有的字母
+    转换成相应的ascill码值
+    以十进制数组形式返回到本地
+    通过js还原成js代码再执行
+    :param opener:
+    :return:
+    '''
     minute = time.localtime().tm_min
     second = time.localtime().tm_sec
     url = 'http://www.gsxt.gov.cn/corp-query-custom-geetest-image.gif?v=' + str(minute) + str(second)
