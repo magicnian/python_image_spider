@@ -29,8 +29,7 @@ def bing_crwal():
             if not os.path.exists(filepath):
                 os.makedirs(filepath)
             if 200 == imgresponse.getcode():
-                with open(tpath + os.sep + str(year) + os.sep + str(month) + os.sep + str(day) + os.sep + str(
-                        index) + '.png', 'wb') as f:
+                with open(filepath + '.png', 'wb') as f:
                     while True:
                         d = imgresponse.read(1024)
                         if not d:
