@@ -3,7 +3,8 @@
 
 import urllib.request as request
 import http.cookiejar as cj
-import time, re
+import time
+import re
 
 
 def init_page():
