@@ -1,0 +1,3 @@
+# python_image_spider
+spider&amp;image
+图片降噪，二值化等等的处理学习，验证码机器学习，爬虫相关……
