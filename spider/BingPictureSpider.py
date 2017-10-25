@@ -29,7 +29,7 @@ def bing_crwal():
             if not os.path.exists(filepath):
                 os.makedirs(filepath)
             if 200 == imgresponse.getcode():
-                with open(filepath + '.png', 'wb') as f:
+                with open(filepath + os.sep + str(index) + '.png', 'wb') as f:
                     while True:
                         d = imgresponse.read(1024)
                         if not d:
@@ -39,7 +39,7 @@ def bing_crwal():
 
 if __name__ == '__main__':
     scheduler = BlockingScheduler()
-    scheduler.add_job(bing_crwal, 'cron', day_of_week='*', hour='16', minute='6')
+    scheduler.add_job(bing_crwal, 'cron', day_of_week='*', hour='8', minute='6')
     scheduler.start()
     try:
         while True:
