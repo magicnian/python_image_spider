@@ -1,9 +1,9 @@
 #!/usr/local/bin/python
 # -*- coding: utf8 -*-
 '''
-Created on 2016年9月2日
+Created on 2017年6月2日
 
-@author: PaoloLiu
+@author: lnn
 '''
 
 from selenium import webdriver
@@ -16,9 +16,9 @@ from urllib import request
 
 def get_merge_image(filename, location_list):
     '''
-    根據位置對圖片進行合並還原
-    :filename:圖片
-    :location_list:圖片位置
+    根据位置对图片进行合并还原
+    :filename:图片
+    :location_list:图片位置
     '''
     pass
 
@@ -56,13 +56,13 @@ def get_merge_image(filename, location_list):
 
 def get_image(driver, div):
     '''
-    下載並還原圖片
+    下载并还原图片
     :driver:webdriver
-    :div:圖片的div
+    :div:图片的div
     '''
     pass
 
-    # 找到圖片所在的div
+    # 找到图片所在的div
     background_images = driver.find_elements_by_xpath(div)
 
     location_list = []
@@ -72,7 +72,7 @@ def get_image(driver, div):
     for background_image in background_images:
         location = {}
 
-        # 在html裏面解析出小圖片的url地址，還有長高的數值
+        # 在html里面解析出小图片的url地址，还有长高的数值
         location['x'] = int(re.findall("background-image: url\(\"(.*)\"\); background-position: (.*)px (.*)px;",
                                        background_image.get_attribute('style'))[0][1])
         location['y'] = int(re.findall("background-image: url\(\"(.*)\"\); background-position: (.*)px (.*)px;",
@@ -86,7 +86,7 @@ def get_image(driver, div):
 
     jpgfile = io.BytesIO(urllib.request.urlopen(imageurl).read())
 
-    # 重新合並圖片
+    # 重新合并图片
     image = get_merge_image(jpgfile, location_list)
 
     return image
@@ -94,7 +94,7 @@ def get_image(driver, div):
 
 def is_similar(image1, image2, x, y):
     '''
-    對比RGB值
+    对比RGB值
     '''
     pass
 
@@ -110,7 +110,7 @@ def is_similar(image1, image2, x, y):
 
 def get_diff_location(image1, image2):
     '''
-    計算缺口的位置
+    计算缺口的位置
     '''
 
     i = 0
@@ -123,13 +123,13 @@ def get_diff_location(image1, image2):
 
 def get_track(length):
     '''
-    根據缺口的位置模擬x軸移動的軌跡
+    根据缺口的位置模拟x轴移动的轨迹
     '''
     pass
 
     list = []
 
-    #     間隔通過隨機範圍函數來獲得
+    # 间隔通过随机范围函数来获得
     x = random.randint(5, 10)
 
     while length - x >= 10:
@@ -145,15 +145,15 @@ def get_track(length):
 
 
 def main():
-    #     這裏的文件路徑是webdriver的文件路徑
+    #     这里的文件路徑是webdriver的文件路径
     driver = webdriver.Chrome(executable_path=r"E:\chromedriver\chromedriver.exe")
     #     driver = webdriver.Firefox()
 
-    #     打開網頁
+    #     打开网页
     driver.get("http://www.gsxt.gov.cn/index.html")
 
     WebDriverWait(driver, 30).until(
-        lambda the_driver:the_driver.find_element_by_xpath('//*[@id="keyword"]').is_displayed())
+        lambda the_driver: the_driver.find_element_by_xpath('//*[@id="keyword"]').is_displayed())
 
     WebDriverWait(driver, 30).until(
         lambda the_driver: the_driver.find_element_by_xpath('//*[@id="btn_query"]').is_displayed())
@@ -164,8 +164,7 @@ def main():
 
     driver.find_element_by_xpath('//*[@id="btn_query"]').click()
 
-
-    #     等待頁面的上元素刷新出來
+    #     等待页面的上元素刷新出來
     WebDriverWait(driver, 30).until(
         lambda the_driver: the_driver.find_element_by_xpath("//div[@class='gt_slider_knob gt_show']").is_displayed())
     WebDriverWait(driver, 30).until(
@@ -173,39 +172,39 @@ def main():
     WebDriverWait(driver, 30).until(
         lambda the_driver: the_driver.find_element_by_xpath("//div[@class='gt_cut_fullbg gt_show']").is_displayed())
 
-    #     下載圖片
+    #     下载图片
     image1 = get_image(driver, "//div[@class='gt_cut_bg gt_show']/div")
     image2 = get_image(driver, "//div[@class='gt_cut_fullbg gt_show']/div")
 
-    #     計算缺口位置
+    #     计算缺口位置
     loc = get_diff_location(image1, image2)
 
-    #     生成x的移動軌跡點
+    #     生成x的移动轨迹点
     track_list = get_track(loc)
 
-    #     找到滑動的圓球
+    #     找到滑动的圆球
     element = driver.find_element_by_xpath("//div[@class='gt_slider_knob gt_show']")
     location = element.location
-    #     獲得滑動圓球的高度
+    #     获得滑动圆球的高度
     y = location['y']
 
-    #     鼠標點擊元素並按住不放
-    print("第一步,點擊元素")
+    # 鼠标点击元素并按住不放
+    print("第一步,点击元素")
     ActionChains(driver).click_and_hold(on_element=element).perform()
     time.sleep(0.15)
 
-    print("第二步，拖動元素")
+    print("第二步，拖动元素")
     track_string = ""
     for track in track_list:
         track_string = track_string + "{%d,%d}," % (track, y - 445)
-        #         xoffset=track+22:這裏的移動位置的值是相對於滑動圓球左上角的相對值，而軌跡變量裏的是圓球的中心點，所以要加上圓球長度的一半。
-        #         yoffset=y-445:這裏也是一樣的。不過要註意的是不同的瀏覽器渲染出來的結果是不一樣的，要保證最終的計算後的值是22，也就是圓球高度的一半
+        #         xoffset=track+22:这里的移动位置的值是相对于滑动圆球左上角的相对值，而轨迹变量里的是圆球的中心点，所以要加上圆球长度的一半。
+        #         yoffset=y-445:这里也是一样的。不过要注意的是不同的浏览器渲染出來的结果是不一样的，要保证最终的计算后的值是22，也就是圆球高度的一半
         ActionChains(driver).move_to_element_with_offset(to_element=element, xoffset=track + 22,
                                                          yoffset=y - 445).perform()
-        #         間隔時間也通過隨機函數來獲得
+        #         间隔时间也通过随机函数來获得
         time.sleep(random.randint(10, 30) / 100)
     print(track_string)
-    #     xoffset=21，本質就是向後退一格。這裏退了5格是因為圓球的位置和滑動條的左邊緣有5格的距離
+    #     xoffset=21，本质就是向后退一格。这里退了5格是因为圆球的位置和滑动条的左边缘有5格的距离
     ActionChains(driver).move_to_element_with_offset(to_element=element, xoffset=21, yoffset=y - 445).perform()
     time.sleep(0.1)
     ActionChains(driver).move_to_element_with_offset(to_element=element, xoffset=21, yoffset=y - 445).perform()
@@ -216,15 +215,15 @@ def main():
     time.sleep(0.1)
     ActionChains(driver).move_to_element_with_offset(to_element=element, xoffset=21, yoffset=y - 445).perform()
 
-    print("第三步，釋放鼠標")
-    #     釋放鼠標
+    print("第三步，释放鼠标")
+    #     释放鼠标
     ActionChains(driver).release(on_element=element).perform()
 
     time.sleep(3)
 
-    #     點擊驗證
-    submit = driver.find_element_by_xpath("//input[@id='embed-submit']")
-    ActionChains(driver).click(on_element=submit).perform()
+    #     点击验证
+    # submit = driver.find_element_by_xpath("//input[@id='embed-submit']")
+    # ActionChains(driver).click(on_element=submit).perform()
 
     time.sleep(5)
 
